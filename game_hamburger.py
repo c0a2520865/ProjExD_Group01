@@ -57,6 +57,12 @@ def load_background_image(file_name, size): #背景画像
     img = pg.image.load(filepath).convert_alpha() 
     return pg.transform.scale(img, size)
 
+def draw_score(screen, font, score):
+    "スコア機能の定義"
+    score_text = font.render(f"スコア：{score}", True, (255, 255, 255))
+    # 左上に背景付きでスコアを表示
+    pg.draw.rect(screen, (50, 50, 50), (10, 10, 180, 40))
+    screen.blit(score_text, (20, 15))
 
 def main():
     pg.init()
@@ -72,6 +78,7 @@ def main():
     font = pg.font.SysFont("meiryo", 20) #判定結果の文字用
     result_font = pg.font.SysFont("meiryo", 40) 
     finish_font = pg.font.SysFont("meiryo", 48)
+    score_font = pg.font.SysFont("mairyo", 24)#スコア用フォント
 
  
     bg_image = load_background_image("haikei_2.jpg", (WIDTH, HEIGHT)) #背景画像の読み込み
@@ -83,28 +90,43 @@ def main():
             zairyo[ing_id]["height"] = computed_height 
 
     #見本のハンバーガー画像読み込み
-    menu_img_1 = pg.image.load("image/1_nomal.png")
-    menu_img_1 =pg.transform.rotozoom(menu_img_1, 0, 0.08)
-    menu_img_2 = pg.image.load("image/2_baconcheese.png")
-    menu_img_2 =pg.transform.rotozoom(menu_img_2, 0, 0.08)
-    menu_img_3 = pg.image.load("image/3_cheese.png")
-    menu_img_3 =pg.transform.rotozoom(menu_img_3, 0, 0.08)
-    menu_img_4 = pg.image.load("image/4_beji.png")
-    menu_img_4 =pg.transform.rotozoom(menu_img_4, 0, 0.08)
-    menu_img_5 = pg.image.load("image/5_double.png")
-    menu_img_5 =pg.transform.rotozoom(menu_img_5, 0, 0.08)
-    menu_img_6 = pg.image.load("image/6_special.png")
-    menu_img_6 =pg.transform.rotozoom(menu_img_6, 0, 0.08)
-    menu_img_7 = pg.image.load("image/7_happy.png")
-    menu_img_7 =pg.transform.rotozoom(menu_img_7, 0, 0.08)
-    bans_img_top = pg.image.load("image/bans_top.png")
-    bans_img_top =pg.transform.rotozoom(bans_img_top, 0, 0.08)
+    # menu_img_1 = pg.image.load("image/1_nomal.png")
+    # menu_img_1 =pg.transform.rotozoom(menu_img_1, 0, 0.08)
+    # menu_img_2 = pg.image.load("image/2_baconcheese.png")
+    # menu_img_2 =pg.transform.rotozoom(menu_img_2, 0, 0.08)
+    # menu_img_3 = pg.image.load("image/3_cheese.png")
+    # menu_img_3 =pg.transform.rotozoom(menu_img_3, 0, 0.08)
+    # menu_img_4 = pg.image.load("image/4_beji.png")
+    # menu_img_4 =pg.transform.rotozoom(menu_img_4, 0, 0.08)
+    # menu_img_5 = pg.image.load("image/5_double.png")
+    # menu_img_5 =pg.transform.rotozoom(menu_img_5, 0, 0.08)
+    # menu_img_6 = pg.image.load("image/6_special.png")
+    # menu_img_6 =pg.transform.rotozoom(menu_img_6, 0, 0.08)
+    # menu_img_7 = pg.image.load("image/7_happy.png")
+    # menu_img_7 =pg.transform.rotozoom(menu_img_7, 0, 0.08)
+    # bans_img_top = pg.image.load("image/bans_top.png")
+    # bans_img_top =pg.transform.rotozoom(bans_img_top, 0, 0.08)
     
+    menu_images = {}
+    menu_files = {
+        1: "1_nomal.png", 2: "2_baconcheese.png", 3: "3_cheese.png",
+        4: "4_beji.png", 5: "5_double.png", 6: "6_special.png", 7: "7_happy.png"
+    }
+    for k, filename in menu_files.items():
+        img = pg.image.load(f"image/{filename}")
+        menu_images[k] = pg.transform.rotozoom(img, 0, 0.08)
+
+    bans_img_top = pg.image.load("image/bans_top.png")
+    bans_img_top = pg.transform.rotozoom(bans_img_top, 0, 0.08)
+
     # 最初のターゲットレシピをランダムに決定
     target_menu = get_random_recipe()
 
     make_burger = [] #積み上げている材料を保存する
     judge_result = None #判定結果用
+
+    # スコアの初期値
+    score = 0
 
     x = True
     while x:
@@ -116,45 +138,57 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 x = False
+            
+        # スコアの描画
+        draw_score(screen, score_font, score)
+        
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                x = False
                 
             elif event.type == pg.KEYDOWN: 
-                if judge_result == 1: # クリア時に何かキーを押したら次の注文へ
+                # 判定が出ている（クリアorミス）時に何かキーを押したら次の注文へ
+                if judge_result is not None:
                     make_burger = []
                     judge_result = None
                     target_menu = get_random_recipe()  # 次のレシピをランダム決定
-                    continue
+                    # continue
 
                 
                 if event.key in key_id: # 数字キーに対応して具材を乗せる
                     ing_id = key_id[event.key]
                     make_burger.append(ing_id)
-                    judge_result = None 
+                    # judge_result = None 
 
                 elif event.key == pg.K_RETURN:# エンターキーで判定（商品提供）
                     if make_burger == RECIPES[target_menu]:
                         judge_result = 1
+                        score += 10 #成功で+10点
                     else:
                         judge_result = 0
+                        score = max(0, score - 10) # ミスで-10点（0未満にならない
 
                 
 
 
                 
         #ランダムに決定されたtarget_menuに合わせてモニターの位置に見本画像を置く
-        if target_menu == 1:
-            screen.blit(menu_img_1, (500, 60))
-        elif target_menu == 2:
-            screen.blit(menu_img_2, (500, 60))
-        elif target_menu == 3:
-            screen.blit(menu_img_3, (500, 60))
-        elif target_menu == 4:
-            screen.blit(menu_img_4, (500, 60))
-        elif target_menu == 5:
-            screen.blit(menu_img_5, (500, 60))
-        elif target_menu == 6:
-            screen.blit(menu_img_6, (500, 60))
-        elif target_menu == 7:
-            screen.blit(menu_img_7, (500, 60))
+        # if target_menu == 1:
+        #     screen.blit(menu_img_1, (500, 60))
+        # elif target_menu == 2:
+        #     screen.blit(menu_img_2, (500, 60))
+        # elif target_menu == 3:
+        #     screen.blit(menu_img_3, (500, 60))
+        # elif target_menu == 4:
+        #     screen.blit(menu_img_4, (500, 60))
+        # elif target_menu == 5:
+        #     screen.blit(menu_img_5, (500, 60))
+        # elif target_menu == 6:
+        #     screen.blit(menu_img_6, (500, 60))
+        # elif target_menu == 7:
+        #     screen.blit(menu_img_7, (500, 60))
+        if target_menu in menu_images:
+            screen.blit(menu_images[target_menu], (500, 60))
 
 
         #材料の積み上げ

@@ -164,7 +164,7 @@ def main():
     score_font = pg.font.SysFont("meiryo", 36)#スコア用フォント
 
  
-    bg_image = load_background_image("haikei_ok.jpeg", (WIDTH, HEIGHT)) #背景画像の読み込み
+    bg_image = load_background_image("haikei.jpeg", (WIDTH, HEIGHT)) #背景画像の読み込み
 
     for ing_id, info in zairyo.items(): #材料画像を読み込み
         img, computed_height = load_and_scale_image(info["file_name"], 200)
@@ -232,26 +232,6 @@ def main():
             # 「STOP: ○秒」と水色で表示する
             stop_left_sec = int((stop_until - current_ticks) / 1000) + 1
             timer_text = timer_font.render(f"STOP: {stop_left_sec}秒", True, (0, 191, 255))
-
-        #     # 「STOP: ○秒」と水色で表示する
-        #     stop_left_sec = int((stop_until - current_ticks) / 1000) + 1
-        #     timer_text = timer_font.render(f"STOP: {stop_left_sec}秒", True, (0, 191, 255))
-        # else:
-        #     # 通常時の計算
-        #     seconds_passed = (current_ticks - start_ticks) / 1000 
-        #     time_left = max(0, LIMIT_TIME - seconds_passed) 
-        #     timer_text = timer_font.render(f"残り時間: {int(time_left)}秒", True, (255, 255, 255)) 
- 
-        # # 通常時の時間切れ判定（停止中はtime_leftが減らないので安全）
-        # if current_ticks >= stop_until:
-        #     seconds_passed = (current_ticks - start_ticks) / 1000 
-        #     time_left = max(0, LIMIT_TIME - seconds_passed) 
-        #     if time_left <= 0 and judge_result is None: 
-        #         gameover = finish_font.render("TIME UP! GAME OVER", True, (200, 0, 0)) 
-        #         screen.blit(gameover, (325, 300)) 
-        #         pg.display.update() 
-        #         time.sleep(2) 
-        #         return
         else:
             #タイマーの計算
             #経過時間を秒に変換し、残り時間を計算

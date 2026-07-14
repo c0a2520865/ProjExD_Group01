@@ -101,10 +101,15 @@ def main():
     bans_img_top = pg.image.load("image/bans_top.png")
     bans_img_top =pg.transform.rotozoom(bans_img_top, 0, 0.08)
 
+    #音楽
     se_put=pg.mixer.Sound("sound/put.mp3")
     se_correct=pg.mixer.Sound("sound/clear.mp3")
     se_incorrect=pg.mixer.Sound("sound/miss.mp3")
     se_skill=pg.mixer.Sound("sound/skill.mp3")
+    se_level1=pg.mixer.Sound("sound/hotaru-piano.mp3")#最低レベル
+    se_level2=pg.mixer.Sound("sound/level2.mp3")
+    se_level3=pg.mixer.Sound("sound/level3.mp3")
+    se_leve4=pg.mixer.Sound("sound/level4-2.mp3")#最高レベル
 
     pg.mixer.music.load("sound/BGM.mp3")
     pg.mixer.music.play(loops=-1)
@@ -203,6 +208,7 @@ def main():
             pg.display.update()
             time.sleep(2)
             return 
+        #se_.play()で音楽追加可能
         
         pg.display.update()
         clock.tick(60)

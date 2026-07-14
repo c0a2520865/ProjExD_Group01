@@ -164,7 +164,7 @@ def main():
     score_font = pg.font.SysFont("meiryo", 36)#スコア用フォント
 
  
-    bg_image = load_background_image("haikei_2.jpg", (WIDTH, HEIGHT)) #背景画像の読み込み
+    bg_image = load_background_image("haikei_ok.jpeg", (WIDTH, HEIGHT)) #背景画像の読み込み
 
     for ing_id, info in zairyo.items(): #材料画像を読み込み
         img, computed_height = load_and_scale_image(info["file_name"], 200)
